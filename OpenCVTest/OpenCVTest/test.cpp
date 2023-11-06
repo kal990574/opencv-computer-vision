@@ -6,7 +6,7 @@ using namespace cv;
 using namespace std;
 
 int main() {
-    Mat image = imread("/Users/mambasa/Desktop/picture/coins1.jpg");
+    Mat image = imread("/Users/mambasa/Desktop/picture/coins0.jpg");
 
     Mat gray_image;
     Mat blur_image;

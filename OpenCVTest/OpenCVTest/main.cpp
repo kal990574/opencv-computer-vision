@@ -6,17 +6,17 @@ using namespace cv;
 using namespace std;
 
 int main() {
-    Mat image = imread("/Users/mambasa/Desktop/picture/coins4.jpg");
+    Mat image = imread("coins0.jpg");
 
     Mat gray_image;
     Mat blur_image;
     Mat canny_image;
     vector<Vec3f> result;
-    int cnt =0;
-    // 1.05좌 1우
+    int cnt = 0;
+    
     namedWindow("Image");
     imshow("Image", image);
-    
+        
     cvtColor(image, gray_image, COLOR_BGR2GRAY);
     // Gaussian blur param 조작, 9x9 고정, sigma 값
     GaussianBlur(gray_image, blur_image, Size(7, 7), 1, 0.387);
@@ -24,7 +24,7 @@ int main() {
     Canny(blur_image, canny_image, 90, 150);
     // Circle param 조작 dp, mindist, 높은 임계값, 크기가 작을수록 잘못된 원 더 감지, 최소원반경, 최대원반경
     HoughCircles(canny_image, result, HOUGH_GRADIENT, 1, 84, 150, 40, 25, 80);
-
+ 
     for (auto& c : result) {
         circle(image, Point(c[0], c[1]), c[2], Scalar(255, 0, 255), 3, LINE_AA);
         cnt++;
@@ -39,6 +39,5 @@ int main() {
     imshow("Canny", canny_image);
     namedWindow("Circles");
     imshow("Circles", image);
-
     waitKey(0);
 }
