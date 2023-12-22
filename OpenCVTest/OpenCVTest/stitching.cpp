@@ -23,17 +23,24 @@ int main() {
     orb->compute(img1, keypoints1, descriptors1);
     orb->compute(img2, keypoints2, descriptors2);
 
-    // 특징점 매칭 (BruteForce Matcher 사용)
+    // BFMatcher 활용 특징점 매칭
     BFMatcher matcher(NORM_HAMMING);
     vector<DMatch> matches;
     matcher.match(descriptors1, descriptors2, matches);
+    
+    // drawMatches 함수
+    Mat drawing;
+    drawMatches(img1, keypoints1, img2, keypoints2, matches, drawing);
+    imshow("matches", drawing);
 
-    // 대응점 집합 계산 (RANSAC 사용하여 outliers 제거)
+    // 대응점 집합 계산
     vector<Point2f> pts1, pts2;
     for (size_t i = 0; i < matches.size(); i++) {
         pts1.push_back(keypoints1[matches[i].queryIdx].pt);
         pts2.push_back(keypoints2[matches[i].trainIdx].pt);
     }
+    
+    // Homography 활용 transform 계산 및 RANSAC 활용 Outlier 제거
     Mat mask;
     Mat H = findHomography(pts1, pts2, RANSAC, 5, mask);
 
