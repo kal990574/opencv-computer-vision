@@ -1,52 +1,51 @@
 #include <opencv2/opencv.hpp>
-#include <opencv2/features2d.hpp>
-#include <opencv2/xfeatures2d.hpp>
+#include <opencv2/features2d/features2d.hpp>
+#include <opencv2/imgproc/imgproc.hpp>
+#include <opencv2/highgui/highgui.hpp>
+#include <vector>
 
 using namespace cv;
-using namespace cv::xfeatures2d;
+using namespace std;
 
 int main() {
-    // Step 0: 두 장의 이미지 촬영
-    Mat image1 = imread("image1.jpeg");
-    Mat image2 = imread("image2.jpeg");
+    // 이미지 load
+    Mat img1 = imread("image1.jpeg", IMREAD_GRAYSCALE);
+    Mat img2 = imread("image2.jpeg", IMREAD_GRAYSCALE);
 
-    // Step 1: 특징점 추출 및 매칭
-    Ptr<FastFeatureDetector> detector = FastFeatureDetector::create();
-    Ptr<DescriptorExtractor> descriptor = BRISK::create();
+    // Key point 변수 생성 및 FAST 기반 특징점 추출
+    vector<KeyPoint> keypoints1, keypoints2;
+    FAST(img1, keypoints1, 30, true);
+    FAST(img2, keypoints2, 30, true);
 
-    std::vector<KeyPoint> kp1, kp2;
-    Mat des1, des2;
+    // ORB 활용 Descriptor 추출
+    Ptr<ORB> orb = ORB::create();
+    Mat descriptors1, descriptors2;
+    orb->compute(img1, keypoints1, descriptors1);
+    orb->compute(img2, keypoints2, descriptors2);
 
-    detector->detect(image1, kp1);
-    detector->detect(image2, kp2);
-
-    descriptor->compute(image1, kp1, des1);
-    descriptor->compute(image2, kp2, des2);
-
+    // 특징점 매칭 (BruteForce Matcher 사용)
     BFMatcher matcher(NORM_HAMMING);
-    std::vector<DMatch> matches;
-    matcher.match(des1, des2, matches);
+    vector<DMatch> matches;
+    matcher.match(descriptors1, descriptors2, matches);
 
-    // Step 2: 대응점 집합 계산
-    std::sort(matches.begin(), matches.end());
-    std::vector<DMatch> good_matches(matches.begin(), matches.begin() + static_cast<int>(matches.size() * 0.25));
-
-    // Step 3: 이미지 간의 transform 계산 (Homography)
-    std::vector<Point2f> pts1, pts2;
-
-    for (const auto& match : good_matches) {
-        pts1.push_back(kp1[match.queryIdx].pt);
-        pts2.push_back(kp2[match.trainIdx].pt);
+    // 대응점 집합 계산 (RANSAC 사용하여 outliers 제거)
+    vector<Point2f> pts1, pts2;
+    for (size_t i = 0; i < matches.size(); i++) {
+        pts1.push_back(keypoints1[matches[i].queryIdx].pt);
+        pts2.push_back(keypoints2[matches[i].trainIdx].pt);
     }
+    Mat mask;
+    Mat H = findHomography(pts1, pts2, RANSAC, 5, mask);
 
-    Mat H = findHomography(pts1, pts2, RANSAC);
-
-    // Step 4: 이미지 이어붙이기
+    // 이미지 합성 및 변환
     Mat result;
-    warpPerspective(image2, result, H, Size(image1.cols + image2.cols, image2.rows));
-    image1.copyTo(result(Rect(0, 0, image1.cols, image1.rows)));
+    warpPerspective(img1, result, H, Size(img1.cols + img2.cols, img1.rows));
+    Mat half(result, Rect(0, 0, img2.cols, img2.rows));
+    img2.copyTo(half);
 
-    // 결과 이미지 저장
-    imshow("result", result);
+    // 결과 표시
+    imshow("Result", result);
+    waitKey(0);
+
     return 0;
 }
