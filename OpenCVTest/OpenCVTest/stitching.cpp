@@ -9,8 +9,8 @@ using namespace std;
 
 int main() {
     // 이미지 load
-    Mat img1 = imread("image1.jpeg", IMREAD_GRAYSCALE);
-    Mat img2 = imread("image2.jpeg", IMREAD_GRAYSCALE);
+    Mat img1 = imread("image1.jpeg", IMREAD_COLOR);
+    Mat img2 = imread("image2.jpeg", IMREAD_COLOR);
 
     // Key point 변수 생성 및 FAST 기반 특징점 추출
     vector<KeyPoint> keypoints1, keypoints2;
@@ -24,7 +24,7 @@ int main() {
     orb->compute(img2, keypoints2, descriptors2);
 
     // BFMatcher 활용 특징점 매칭
-    BFMatcher matcher(NORM_HAMMING);
+    BFMatcher matcher(NORM_L2);
     vector<DMatch> matches;
     matcher.match(descriptors1, descriptors2, matches);
     
@@ -43,13 +43,15 @@ int main() {
     // Homography 활용 transform 계산 및 RANSAC 활용 Outlier 제거
     Mat H = findHomography(pts1, pts2, RANSAC);
 
-    // 이미지 합성 및 변환
+    // image 합성
     Mat result;
-    warpPerspective(img1, result, H, Size(img1.cols + img2.cols, img1.rows));
-    Mat half(result, Rect(0, 0, img2.cols, img2.rows));
-    img2.copyTo(half);
+    warpPerspective(img2, result, H, Size(2*img2.cols, img2.rows), INTER_CUBIC);
+    Mat mam;
+    mam = result.clone();
+    Mat half(mam, Rect(0, 0, img1.cols, img1.rows));
+    img1.copyTo(half);
 
-    // 결과 표시
+    // 결과 출력
     imshow("Result", result);
     waitKey(0);
 
