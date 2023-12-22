@@ -65,7 +65,7 @@
 		988B8E662AE266FF0095B7D9 /* libopencv_ximgproc.4.8.0.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 980040072ACE4C9200A6A4AE /* libopencv_ximgproc.4.8.0.dylib */; };
 		988B8E672AE266FF0095B7D9 /* libopencv_xobjdetect.4.8.0.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 980040182ACE4C9200A6A4AE /* libopencv_xobjdetect.4.8.0.dylib */; };
 		988B8E682AE266FF0095B7D9 /* libopencv_xphoto.4.8.0.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 9800401A2ACE4C9200A6A4AE /* libopencv_xphoto.4.8.0.dylib */; };
-		98DD4BD62B2FF366005FECDB /* detect.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 988B8E692AF3FC990095B7D9 /* detect.cpp */; };
+		98DD4E902B35B8D1005FECDB /* stitching.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 98DD4E8F2B35B8D1005FECDB /* stitching.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -141,6 +141,7 @@
 		980040292ACE4C9300A6A4AE /* libopencv_imgcodecs.4.8.0.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libopencv_imgcodecs.4.8.0.dylib; path = ../../../../../opt/homebrew/Cellar/opencv/4.8.0_6/lib/libopencv_imgcodecs.4.8.0.dylib; sourceTree = "<group>"; };
 		988B8E692AF3FC990095B7D9 /* detect.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = detect.cpp; sourceTree = "<group>"; };
 		988B8E6A2AF3FC990095B7D9 /* test.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = test.hpp; sourceTree = "<group>"; };
+		98DD4E8F2B35B8D1005FECDB /* stitching.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = stitching.cpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -236,6 +237,7 @@
 				98003F532AB3F3B000A6A4AE /* main.cpp */,
 				988B8E692AF3FC990095B7D9 /* detect.cpp */,
 				988B8E6A2AF3FC990095B7D9 /* test.hpp */,
+				98DD4E8F2B35B8D1005FECDB /* stitching.cpp */,
 			);
 			path = OpenCVTest;
 			sourceTree = "<group>";
@@ -359,7 +361,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				98DD4BD62B2FF366005FECDB /* detect.cpp in Sources */,
+				98DD4E902B35B8D1005FECDB /* stitching.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
