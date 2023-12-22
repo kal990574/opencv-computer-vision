@@ -41,8 +41,7 @@ int main() {
     }
     
     // Homography 활용 transform 계산 및 RANSAC 활용 Outlier 제거
-    Mat mask;
-    Mat H = findHomography(pts1, pts2, RANSAC, 5, mask);
+    Mat H = findHomography(pts1, pts2, RANSAC);
 
     // 이미지 합성 및 변환
     Mat result;
