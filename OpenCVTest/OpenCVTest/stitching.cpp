@@ -9,8 +9,8 @@ using namespace std;
 
 int main() {
     // 이미지 load
-    Mat img1 = imread("image_1.jpeg");
-    Mat img2 = imread("image_2.jpeg");
+    Mat img1 = imread("image1.jpeg");
+    Mat img2 = imread("image2.jpeg");
     
     Mat grayimg1, grayimg2;
     cvtColor(img1, grayimg1, COLOR_RGB2GRAY);
