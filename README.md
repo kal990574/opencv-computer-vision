@@ -1,128 +1,47 @@
-## OpenCV 활용 이미지 연결 기능 구현
+# 🖼️ OpenCV 기반 이미지 매칭 및 변환 프로젝트
 
-### 1. Fast 알고리즘 및 ORB를 이용한 특징점 추출
-Fast 알고리즘과 ORB(Oriented FAST and Rotated BRIEF)를 사용하여 이미지에서 특징점을 추출합니다. Fast 알고리즘은 빠르고 효율적인 코너 검출 알고리즘이며, ORB는 이를 기반으로 회전 불변성 및 스케일 불변성을 가진 특징점 디스크립터를 생성합니다.
+OpenCV 라이브러리를 활용하여 이미지 간의 특징점을 추출하고, 이를 바탕으로 두 이미지를 정렬 및 변환하는 기능을 구현한 프로젝트입니다.
 
-```cpp
-#include <opencv2/opencv.hpp>
-#include <opencv2/features2d.hpp>
-#include <vector>
+---
 
-int main() {
-    // 이미지 로드
-    cv::Mat image = cv::imread("image.jpg", cv::IMREAD_GRAYSCALE);
-    if (image.empty()) {
-        std::cerr << "Image not found!" << std::endl;
-        return -1;
-    }
+## 📌 프로젝트 개요
 
-    // ORB 특징점 검출기 생성
-    cv::Ptr<cv::ORB> orb = cv::ORB::create();
+- 컴퓨터 비전의 기초 알고리즘을 실제 이미지 처리에 적용
+- 두 이미지 간의 특징점을 추출하고, 매칭 후 변환 행렬(Homography)을 계산하여 이미지 정합 수행
+- C++ 및 OpenCV를 활용한 실시간 시각화까지 포함
 
-    std::vector<cv::KeyPoint> keypoints;
-    cv::Mat descriptors;
+---
 
-    // 특징점 검출 및 기술자 계산
-    orb->detectAndCompute(image, cv::noArray(), keypoints, descriptors);
+## 🔹 핵심 기능
 
-    // 결과 시각화
-    cv::Mat output;
-    cv::drawKeypoints(image, keypoints, output);
-    cv::imshow("ORB Keypoints", output);
-    cv::waitKey(0);
+### ✅ 1. 이미지 특징점 추출
+- **Fast 알고리즘**을 기반으로 한 **ORB (Oriented FAST and Rotated BRIEF)** 알고리즘을 사용하여 이미지 내 특징점 추출
+- 회전 및 크기 변화에 강한 특징점 디스크립터 생성
 
-    return 0;
-}
-```
+### ✅ 2. 특징점 매칭
+- **BFMatcher (Brute Force Matcher)** 를 이용해 두 이미지의 특징점 디스크립터를 매칭  
+- `std::vector`를 활용해 매칭 결과를 저장하고 시각화
 
-### 2. BFMatcher와 vector를 활용하여 특징점 매칭 및 계산
-BFMatcher(Brute Force Matcher)를 사용하여 ORB 디스크립터를 기반으로 특징점을 매칭합니다. `std::vector`를 사용하여 매칭된 결과를 저장하고, 매칭 품질을 평가합니다.
+### ✅ 3. Homography 및 이미지 정합
+- 특징점 매칭 결과를 기반으로 **Homography 행렬** 계산  
+- **RANSAC 알고리즘**을 적용하여 이상치(outlier)를 제거하고 안정적인 변환 수행  
+- 변환된 이미지를 `warpPerspective`로 시각적으로 보정
 
-```cpp
-#include <opencv2/opencv.hpp>
-#include <opencv2/features2d.hpp>
-#include <vector>
+---
 
-int main() {
-    // 이미지 로드
-    cv::Mat image1 = cv::imread("image1.jpg", cv::IMREAD_GRAYSCALE);
-    cv::Mat image2 = cv::imread("image2.jpg", cv::IMREAD_GRAYSCALE);
-    if (image1.empty() || image2.empty()) {
-        std::cerr << "Images not found!" << std::endl;
-        return -1;
-    }
+## 🛠 사용 기술
 
-    // ORB 특징점 검출기 생성
-    cv::Ptr<cv::ORB> orb = cv::ORB::create();
+- **언어**: C++  
+- **라이브러리**: OpenCV (4.x 이상 권장)  
+- **알고리즘**: ORB, BFMatcher, RANSAC, Homography  
+- **도구**: Visual Studio / g++ / CMake 등 (플랫폼 무관)
 
-    std::vector<cv::KeyPoint> keypoints1, keypoints2;
-    cv::Mat descriptors1, descriptors2;
+---
 
-    orb->detectAndCompute(image1, cv::noArray(), keypoints1, descriptors1);
-    orb->detectAndCompute(image2, cv::noArray(), keypoints2, descriptors2);
+## 🎯 학습 포인트
 
-    // BFMatcher 생성 및 특징점 매칭
-    cv::BFMatcher matcher(cv::NORM_HAMMING);
-    std::vector<cv::DMatch> matches;
-    matcher.match(descriptors1, descriptors2, matches);
+- 실제 이미지에서 특징점을 검출하고 정렬하는 **비전 알고리즘 파이프라인**에 대한 이해  
+- OpenCV의 주요 기능들 (ORB, BFMatcher, findHomography 등) 직접 활용  
+- 시각적 결과를 통해 매칭 품질 및 정합 정도를 확인하는 **컴퓨터 비전의 실습 능력 강화**
 
-    // 매칭 결과 시각화
-    cv::Mat output;
-    cv::drawMatches(image1, keypoints1, image2, keypoints2, matches, output);
-    cv::imshow("Matches", output);
-    cv::waitKey(0);
-
-    return 0;
-}
-```
-
-### 3. Homography와 RANSAC 알고리즘을 통해 이미지 변환 계산
-Homography와 RANSAC(Random Sample Consensus) 알고리즘을 사용하여 두 이미지 간의 변환 행렬을 계산합니다. 이 알고리즘은 두 이미지 간의 매칭된 특징점을 기반으로 변환 행렬을 추정하여 이미지의 기하학적 변형을 보정합니다.
-
-```cpp
-#include <opencv2/opencv.hpp>
-#include <opencv2/features2d.hpp>
-#include <vector>
-
-int main() {
-    // 이미지 로드
-    cv::Mat image1 = cv::imread("image1.jpg", cv::IMREAD_GRAYSCALE);
-    cv::Mat image2 = cv::imread("image2.jpg", cv::IMREAD_GRAYSCALE);
-    if (image1.empty() || image2.empty()) {
-        std::cerr << "Images not found!" << std::endl;
-        return -1;
-    }
-
-    // ORB 특징점 검출기 생성
-    cv::Ptr<cv::ORB> orb = cv::ORB::create();
-
-    std::vector<cv::KeyPoint> keypoints1, keypoints2;
-    cv::Mat descriptors1, descriptors2;
-
-    orb->detectAndCompute(image1, cv::noArray(), keypoints1, descriptors1);
-    orb->detectAndCompute(image2, cv::noArray(), keypoints2, descriptors2);
-
-    // BFMatcher 생성 및 특징점 매칭
-    cv::BFMatcher matcher(cv::NORM_HAMMING);
-    std::vector<cv::DMatch> matches;
-    matcher.match(descriptors1, descriptors2, matches);
-
-    // 매칭된 포인트 추출
-    std::vector<cv::Point2f> points1, points2;
-    for (const auto& match : matches) {
-        points1.push_back(keypoints1[match.queryIdx].pt);
-        points2.push_back(keypoints2[match.trainIdx].pt);
-    }
-
-    // Homography 계산 및 RANSAC 적용
-    cv::Mat H = cv::findHomography(points1, points2, cv::RANSAC);
-
-    // 결과 시각화
-    cv::Mat result;
-    cv::warpPerspective(image1, result, H, image2.size());
-    cv::imshow("Warped Image", result);
-    cv::waitKey(0);
-
-    return 0;
-}
-```
+---
